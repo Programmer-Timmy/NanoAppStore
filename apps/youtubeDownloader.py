@@ -56,8 +56,8 @@ cipher.get_throttling_function_name = get_throttling_function_name
 
 # YouTube Downloader Application Class
 class YouTubeDownloaderApp:
-    def __init__(self, root):
-        self.root = root
+    def __init__(self):
+        self.root = ctk.CTk()
         self.root.geometry("720x480")
         self.root.title("YouTube Downloader")
 
@@ -103,10 +103,10 @@ class YouTubeDownloaderApp:
     def validate_url(self, url):
         """Validate the URL to ensure it's a YouTube link."""
         if not url:
-            CTkMessagebox(title="Input Error", message="Please enter a YouTube URL.", icon="cancel")
+            CTkMessagebox(title="Input Error", message="Please enter a YouTube URL.", icon="cancel", sound=True)
             return False
         if "youtube.com/watch?v=" not in url:
-            CTkMessagebox(title="Input Error", message="Please enter a valid YouTube video URL.", icon="cancel")
+            CTkMessagebox(title="Input Error", message="Please enter a valid YouTube video URL.", icon="cancel", sound=True)
             return False
         return True
 
@@ -129,3 +129,8 @@ class YouTubeDownloaderApp:
         progress = (1 - bytes_remaining / stream.filesize) * 100
         self.progress_bar.set(progress / 100)
         self.progress_label.configure(text=f"{progress:.2f}%")
+
+# Main function to run the application
+if __name__ == "__main__":
+    app = YouTubeDownloaderApp()
+    app.root.mainloop()

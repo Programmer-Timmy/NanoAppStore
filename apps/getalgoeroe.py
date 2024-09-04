@@ -261,3 +261,7 @@ class Getalgoeroe:
         for widget in self.app.winfo_children():
             if isinstance(widget, customtkinter.CTkLabel) and widget._text_color == "red":
                 widget.destroy()
+
+if __name__ == "__main__":
+    app = Getalgoeroe()
+    app.app.mainloop()
