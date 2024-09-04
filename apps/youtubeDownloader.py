@@ -21,6 +21,7 @@ _default_clients["IOS_EMBED"]["context"]["client"]["clientVersion"] = "19.08.35"
 _default_clients["IOS_MUSIC"]["context"]["client"]["clientVersion"] = "6.41"
 _default_clients["ANDROID_MUSIC"] = _default_clients["ANDROID_CREATOR"]
 
+
 # by @KhurramRana on GitHub https://github.com/pytube/pytube/issues/1973#issuecomment-2232907131 (400 error fix)
 # Override the throttling function in pytube's cipher module
 def get_throttling_function_name(js: str) -> str:
@@ -52,7 +53,9 @@ def get_throttling_function_name(js: str) -> str:
         caller="get_throttling_function_name", pattern="multiple"
     )
 
+
 cipher.get_throttling_function_name = get_throttling_function_name
+
 
 # YouTube Downloader Application Class
 class YouTubeDownloaderApp:
@@ -68,7 +71,8 @@ class YouTubeDownloaderApp:
         self.title_label = ctk.CTkLabel(self.root, text="YouTube Downloader", font=("Arial", 24))
         self.title_label.pack(pady=10)
 
-        self.url_label = ctk.CTkLabel(self.root, text="Enter the URL of the video you want to download:", font=("Arial", 18))
+        self.url_label = ctk.CTkLabel(self.root, text="Enter the URL of the video you want to download:",
+                                      font=("Arial", 18))
         self.url_label.pack(pady=5)
 
         self.url_var = ctk.StringVar()
@@ -82,7 +86,8 @@ class YouTubeDownloaderApp:
         self.progress_bar.set(0)
         self.progress_bar.pack(pady=5)
 
-        self.download_button = ctk.CTkButton(self.root, text="Download", font=("Arial", 18), command=self.start_download)
+        self.download_button = ctk.CTkButton(self.root, text="Download", font=("Arial", 18),
+                                             command=self.start_download)
         self.download_button.pack(pady=10)
 
         self.finished_label = ctk.CTkLabel(self.root, text="", font=("Arial", 18))
@@ -101,17 +106,28 @@ class YouTubeDownloaderApp:
         download_thread.start()
 
     def validate_url(self, url):
-        """Validate the URL to ensure it's a YouTube link."""
+        """
+        Validate the URL to ensure it's a YouTube link.
+
+        :param url: The URL to validate
+
+        :return: True if the URL is valid, False otherwise
+        """
         if not url:
             CTkMessagebox(title="Input Error", message="Please enter a YouTube URL.", icon="cancel", sound=True)
             return False
         if "youtube.com/watch?v=" not in url:
-            CTkMessagebox(title="Input Error", message="Please enter a valid YouTube video URL.", icon="cancel", sound=True)
+            CTkMessagebox(title="Input Error", message="Please enter a valid YouTube video URL.", icon="cancel",
+                          sound=True)
             return False
         return True
 
     def download_video(self, url):
-        """Download the YouTube video."""
+        """
+        Download the YouTube video.
+
+        :param url: The URL of the video to download
+        """
         self.finished_label.configure(text="Downloading...", text_color="blue")
         try:
             yt = YouTube(url, on_progress_callback=self.on_progress)
@@ -125,10 +141,17 @@ class YouTubeDownloaderApp:
             self.download_button.configure(state="normal")
 
     def on_progress(self, stream, chunk, bytes_remaining):
-        """Update progress bar and label during download."""
+        """
+        Update progress bar and label during download.
+
+        :param stream: The stream being downloaded
+        :param chunk: The chunk of data being downloaded
+        :param bytes_remaining: The number of bytes remaining to download
+        """
         progress = (1 - bytes_remaining / stream.filesize) * 100
         self.progress_bar.set(progress / 100)
         self.progress_label.configure(text=f"{progress:.2f}%")
+
 
 # Main function to run the application
 if __name__ == "__main__":
