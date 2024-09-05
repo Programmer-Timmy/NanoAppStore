@@ -1,6 +1,9 @@
 import threading
+from tkinter import StringVar
+
 import customtkinter as ctk
 from CTkMessagebox import CTkMessagebox
+from customtkinter import CTkLabel, CTkProgressBar, CTkButton
 
 from pytube import YouTube
 from pytube.exceptions import RegexMatchError
@@ -56,28 +59,34 @@ def get_throttling_function_name(js: str) -> str:
 
 cipher.get_throttling_function_name = get_throttling_function_name
 
+
 # https://www.youtube.com/watch?v=NI9LXzo0UY0 (video used for making the app, largely the gui)
 # YouTube Downloader Application Class
 class YouTubeDownloaderApp:
+    url_var: StringVar
+    progress_label: CTkLabel
+    finished_label: CTkLabel
+    progress_bar: CTkProgressBar
+    download_button: CTkButton
+
     def __init__(self):
         self.root = ctk.CTk()
         self.root.geometry("720x480")
         self.root.title("YouTube Downloader")
-
         self.create_widgets()
 
     def create_widgets(self):
         """Create and arrange the UI components using pack."""
-        self.title_label = ctk.CTkLabel(self.root, text="YouTube Downloader", font=("Arial", 24))
-        self.title_label.pack(pady=10)
+        title_label = ctk.CTkLabel(self.root, text="YouTube Downloader", font=("Arial", 24))
+        title_label.pack(pady=10)
 
-        self.url_label = ctk.CTkLabel(self.root, text="Enter the URL of the video you want to download:",
+        url_label = ctk.CTkLabel(self.root, text="Voer een URL in van de YouTube video die je wilt downloaden",
                                       font=("Arial", 18))
-        self.url_label.pack(pady=5)
+        url_label.pack(pady=5)
 
         self.url_var = ctk.StringVar()
-        self.url_entry = ctk.CTkEntry(self.root, font=("Arial", 18), width=350, textvariable=self.url_var)
-        self.url_entry.pack(pady=5)
+        url_entry = ctk.CTkEntry(self.root, font=("Arial", 18), width=350, textvariable=self.url_var)
+        url_entry.pack(pady=5)
 
         self.progress_label = ctk.CTkLabel(self.root, text="0%", font=("Arial", 18))
         self.progress_label.pack(pady=5)
@@ -114,11 +123,10 @@ class YouTubeDownloaderApp:
         :return: True if the URL is valid, False otherwise
         """
         if not url:
-            CTkMessagebox(title="Input Error", message="Please enter a YouTube URL.", icon="cancel", sound=True)
+            CTkMessagebox(title="Invoerfout", message="Voer een geldige URL in", icon="cancel", sound=True)
             return False
         if "youtube.com/watch?v=" not in url:
-            CTkMessagebox(title="Input Error", message="Please enter a valid YouTube video URL.", icon="cancel",
-                          sound=True)
+            CTkMessagebox(title="Invoerfout", message="Voer een geldige YouTube URL in", icon="cancel", sound=True)
             return False
         return True
 
@@ -128,15 +136,14 @@ class YouTubeDownloaderApp:
 
         :param url: The URL of the video to download
         """
-        self.finished_label.configure(text="Downloading...", text_color="blue")
+        self.finished_label.configure(text="Downloaden...", text_color="blue")
         try:
             yt = YouTube(url, on_progress_callback=self.on_progress)
             stream = yt.streams.get_highest_resolution()
-            stream.download()
-            self.finished_label.configure(text="Finished Downloading", text_color="green")
+            stream.download(output_path="../data/youtubeDownloader/videos")
+            self.finished_label.configure(text="Download geslaagd", text_color="green")
         except Exception as e:
-            self.finished_label.configure(text="Download Failed", text_color="red")
-            logging.error(f"Error: {e}")  # Log the exception for debugging
+            self.finished_label.configure(text="Download mislukt", text_color="red")
         finally:
             self.download_button.configure(state="normal")
 
