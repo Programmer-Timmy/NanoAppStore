@@ -1,6 +1,5 @@
 import dataclasses
 import random
-import tkinter
 import customtkinter
 
 
@@ -23,6 +22,7 @@ class Difficulty:
     hard: str = "Moeilijk"
 
 
+# https://www.youtube.com/watch?v=NI9LXzo0UY0 (video used making the gui)
 class Getalgoeroe:
     """This is the Getalgoeroe class. It is a dataclass that contains the game logic and UI methods."""
     app: customtkinter.CTk = customtkinter.CTk()

@@ -56,7 +56,7 @@ def get_throttling_function_name(js: str) -> str:
 
 cipher.get_throttling_function_name = get_throttling_function_name
 
-
+# https://www.youtube.com/watch?v=NI9LXzo0UY0 (video used for making the app, largely the gui)
 # YouTube Downloader Application Class
 class YouTubeDownloaderApp:
     def __init__(self):
