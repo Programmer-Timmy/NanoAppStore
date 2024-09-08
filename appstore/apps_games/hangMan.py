@@ -1,3 +1,4 @@
+""" HangMan game """
 # TODO: Add GUI for HangMan
 import random
 from datetime import datetime
@@ -7,12 +8,13 @@ import json
 
 
 class HangMan:
+    """HangMan game class"""
     difficulty: str
     word: str
     user_name: str
 
     max_tries: int
-    tries: int = 0
+    tries: int = 1
     guessed_letters: list = []
 
     def __init__(self):
@@ -23,6 +25,7 @@ class HangMan:
         self.start_game()
 
     def _get_max_tries(self):
+        """Set the maximum number of tries based on the difficulty level."""
         match self.difficulty:
             case Difficulty.easy:
                 self.max_tries = 20
@@ -32,6 +35,7 @@ class HangMan:
                 self.max_tries = 10
 
     def get_random_word(self):
+        """Get a random word based on the difficulty level."""
         json_file = open("../data/hangMan/words.json", "r").read()
         words = json.loads(json_file)
         match self.difficulty:
@@ -43,6 +47,7 @@ class HangMan:
                 self.word = random.choice(words["hard"])
 
     def ask_difficulty(self):
+        """Ask the player to choose a difficulty level."""
         possible_difficulties = [Difficulty.easy, Difficulty.medium, Difficulty.hard]
 
         print("Kies een moeilijkheidsgraad:")
@@ -64,58 +69,89 @@ class HangMan:
         print(f"Je hebt gekozen voor moeilijkheidsgraad: {self.difficulty}")
 
     def start_game(self):
+        """Start the game."""
         print("Welkom bij Galgje!")
         print(f"Je hebt {self.max_tries} pogingen.")
-        self.ask_letter()
 
-    def ask_letter(self):
+        # Use a while loop to keep the game running until the player wins or loses. (this is better than using for loop)
+        while self.tries <= self.max_tries:
+            self.display_status()
+            letter = input("Raad een letter: ")
+            self.check_letter(letter)
+            if self.check_win_or_lose():
+                break
+
+    def display_status(self):
+        """Display the game status."""
         print("--------------------")
+        print(f"Poging: {self.tries}/{self.max_tries}")
         print("Raad het woord:")
-        print(" ".join([letter if letter in self.guessed_letters else "_" for letter in self.word]))
-        letter = input("Raad een letter: ")
-        self.check_letter(letter)
+        display_word = ""
+
+        for letter in self.word:
+            if letter in self.guessed_letters:
+                display_word += letter + " "
+            else:
+                display_word += "_ "
+
+        print(display_word.strip())
 
     def check_letter(self, letter):
-        if letter in self.word and letter not in self.guessed_letters:
-            print("Goed geraden!")
-            self.guessed_letters.append(letter)
-            self.check_win()
-        elif letter in self.guessed_letters:
-            print("Je hebt deze letter al geraden.")
-            self.ask_letter()
+        """Check if the guessed letter is correct."""
+        if letter in self.word:
+            if letter not in self.guessed_letters:
+                print("Goed geraden!")
+                self.guessed_letters.append(letter)
+            else:
+                print("Je hebt deze letter al geraden.")
         else:
             print("Fout geraden!")
             self.tries += 1
-            self.check_lose()
 
-    def check_win(self):
+    def check_win_or_lose(self) -> bool:
+        """
+        Check if the player has won or lost the game.
+
+        :return: True if the game is over, False otherwise
+        """
+        print(self.max_tries, self.tries)
+        # Check if all letters in the word are guessed
         if all(letter in self.guessed_letters for letter in self.word):
             self.save_score(True)
-            print("Gefeliciteerd, je hebt het woord geraden! Het woord was: ", self.word)
+            print("Gefeliciteerd, je hebt het woord geraden! Het woord was:", self.word)
             self.play_again()
-        else:
-            self.ask_letter()
-
-    def check_lose(self):
-        if self.tries >= self.max_tries:
-            print("Je hebt het maximale aantal pogingen bereikt.")
-            print(f"Het woord was: {self.word}")
+            # Return True to break the loop
+            return True
+        elif self.tries > self.max_tries:
+            print(f"Je hebt het maximale aantal pogingen bereikt. Het woord was: {self.word}")
             self.save_score(False)
             self.play_again()
-        else:
-            self.ask_letter()
+            # Return True to break the loop
+            return True
+        return False
 
     def play_again(self):
+        """Ask the player if they want to play again."""
+        yes_tuple = ("ja", "yes", "j", "y")
+        no_tuple = ("nee", "no", "n")
         choice = input("Wil je nog een keer spelen? (ja/nee): ")
-        if choice.lower() == "ja":
-            self.__init__()
-        elif choice.lower() == "nee":
-            print("Bedankt voor het spelen!")
-        else:
-            print("Ongeldige keuze. Kies ja of nee.")
-            self.play_again()
+        match choice:
+            case choice if choice in yes_tuple:
+                self.tries = 1
+                self.guessed_letters = []
+                self.ask_difficulty()
+                self.get_random_word()
+                self.start_game()
+            case choice if choice in no_tuple:
+                print("Bedankt voor het spelen!")
+
+            # If the user enters anything other than the yes or no options, ask again.
+            case _:
+                print("Ongeldige keuze. Kies ja of nee.")
+                self.play_again()
 
     def save_score(self, guessed: bool):
+        """Save the score to a JSON file."""
         with open("../data/hangMan/scores.json", "r+") as file:
             scores = json.loads(file.read())
             score = {

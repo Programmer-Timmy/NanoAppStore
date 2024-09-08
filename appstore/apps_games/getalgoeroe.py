@@ -1,7 +1,9 @@
+""" This is the Getalgoeroe module. It contains the Getalgoeroe class that implements the game logic and UI methods. """
 import dataclasses
 import random
 import customtkinter
 
+# TODO: Ask if its ok to not use for loop in start_game method
 
 @dataclasses.dataclass
 class Difficulty:

@@ -1,3 +1,4 @@
+""" YouTube Downloader Application """
 import threading
 from tkinter import StringVar
 
