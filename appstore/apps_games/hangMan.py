@@ -1,3 +1,4 @@
+# TODO: Add GUI for HangMan
 import random
 from datetime import datetime
 
@@ -68,16 +69,20 @@ class HangMan:
         self.ask_letter()
 
     def ask_letter(self):
+        print("--------------------")
         print("Raad het woord:")
         print(" ".join([letter if letter in self.guessed_letters else "_" for letter in self.word]))
         letter = input("Raad een letter: ")
         self.check_letter(letter)
 
     def check_letter(self, letter):
-        if letter in self.word:
+        if letter in self.word and letter not in self.guessed_letters:
             print("Goed geraden!")
             self.guessed_letters.append(letter)
             self.check_win()
+        elif letter in self.guessed_letters:
+            print("Je hebt deze letter al geraden.")
+            self.ask_letter()
         else:
             print("Fout geraden!")
             self.tries += 1
@@ -111,20 +116,20 @@ class HangMan:
             self.play_again()
 
     def save_score(self, guessed: bool):
-        # {
-        #   "userName": "username",
-        #   "guessed": true,
-        #   "timesGuessed": 8,
-        #   "dateTime": "08-09-2024"
-        # }
-        with open("../data/hangMan/scores.json", "w") as file:
+        with open("../data/hangMan/scores.json", "r+") as file:
+            scores = json.loads(file.read())
             score = {
                 "userName": self.user_name,
                 "guessed": guessed,
                 "timesGuessed": self.tries,
                 "dateTime": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
             }
-            json.dump(score, file)
+            scores.append(score)
+
+            # Reset file pointer to beginning of file. So we can overwrite the file.
+            file.seek(0)
+            file.write(json.dumps(scores))
+
 
 if __name__ == "__main__":
     hang_man = HangMan()
