@@ -1,0 +1,23 @@
+{
+  "easy": [
+    "huis", "kat", "hond", "boom", "water", "boek", "stoel", "tafel", "auto", "fiets",
+    "kind", "school", "straat", "zon", "maan", "appel", "brood", "melk", "kaas", "ei",
+    "vis", "vogel", "bloem", "vriend", "vriendin", "dag", "nacht", "jaar", "tijd", "geld",
+    "naam", "stad", "land"
+  ],
+  "medium": [
+    "regen", "lucht", "bergen", "bos", "zee", "rivier", "dorp", "brug", "trein", "vliegtuig",
+    "computer", "muziek", "taal", "cultuur", "familie", "gezondheid", "vakantie", "museum",
+    "restaurant", "markt", "theater", "bibliotheek", "universiteit", "natuur", "technologie",
+    "wetenschap", "energie", "politiek", "economie", "geschiedenis", "filosofie", "psychologie",
+    "sociologie"
+  ],
+  "hard": [
+    "aardbeving", "maatschappij", "verantwoordelijkheid", "communicatie", "organisatie",
+    "samenleving", "onderwijs", "geneeskunde", "bewustzijn", "identiteit", "ondernemerschap",
+    "werkgelegenheid", "milieu", "klimaatverandering", "innovatie", "samenwerking", "ethiek",
+    "filosofisch", "rechtvaardigheid", "democratie", "bureaucratie", "wereldbeeld",
+    "gelijkwaardigheid", "diversiteit", "vrijheid", "solidariteit", "integriteit", "transparantie",
+    "duurzaamheid", "humaniteit", "globalisering", "digitalisering", "complexiteit", "continuïteit"
+  ]
+}
