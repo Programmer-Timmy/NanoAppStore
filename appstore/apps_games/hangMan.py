@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 
 from appstore.apps_games.getalgoeroe import Difficulty
 import json
@@ -11,6 +12,7 @@ class HangMan:
 
     max_tries: int
     tries: int = 0
+    guessed_letters: list = []
 
     def __init__(self):
         self.user_name = input("Wat is je naam? ")
@@ -62,18 +64,19 @@ class HangMan:
 
     def start_game(self):
         print("Welkom bij Galgje!")
-        print("Raad het woord:")
-        print("_ " * len(self.word))
         print(f"Je hebt {self.max_tries} pogingen.")
         self.ask_letter()
 
     def ask_letter(self):
+        print("Raad het woord:")
+        print(" ".join([letter if letter in self.guessed_letters else "_" for letter in self.word]))
         letter = input("Raad een letter: ")
         self.check_letter(letter)
 
     def check_letter(self, letter):
         if letter in self.word:
             print("Goed geraden!")
+            self.guessed_letters.append(letter)
             self.check_win()
         else:
             print("Fout geraden!")
@@ -81,8 +84,9 @@ class HangMan:
             self.check_lose()
 
     def check_win(self):
-        if "_" not in self.word:
-            print("Gefeliciteerd! Je hebt het woord geraden.")
+        if all(letter in self.guessed_letters for letter in self.word):
+            self.save_score(True)
+            print("Gefeliciteerd, je hebt het woord geraden! Het woord was: ", self.word)
             self.play_again()
         else:
             self.ask_letter()
@@ -91,6 +95,7 @@ class HangMan:
         if self.tries >= self.max_tries:
             print("Je hebt het maximale aantal pogingen bereikt.")
             print(f"Het woord was: {self.word}")
+            self.save_score(False)
             self.play_again()
         else:
             self.ask_letter()
@@ -99,14 +104,27 @@ class HangMan:
         choice = input("Wil je nog een keer spelen? (ja/nee): ")
         if choice.lower() == "ja":
             self.__init__()
-            self.start_game()
         elif choice.lower() == "nee":
             print("Bedankt voor het spelen!")
         else:
             print("Ongeldige keuze. Kies ja of nee.")
             self.play_again()
 
+    def save_score(self, guessed: bool):
+        # {
+        #   "userName": "username",
+        #   "guessed": true,
+        #   "timesGuessed": 8,
+        #   "dateTime": "08-09-2024"
+        # }
+        with open("../data/hangMan/scores.json", "w") as file:
+            score = {
+                "userName": self.user_name,
+                "guessed": guessed,
+                "timesGuessed": self.tries,
+                "dateTime": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            }
+            json.dump(score, file)
 
 if __name__ == "__main__":
     hang_man = HangMan()
-    print(hang_man.difficulty)
