@@ -20,8 +20,7 @@ class Diary:
         self.login()
         if self.logged_in:
             self.show_diary_entries()
-            entry = self.ask_to_chose_entry()
-            print(entry.title)
+            self.ask_wat_todo()
 
     def login(self):
         """Log the user in."""
@@ -108,6 +107,8 @@ class Diary:
                 print("Ongeldige keuze")
                 self.ask_wat_todo()
 
+        self.ask_wat_todo()
+
     def add_new_day(self):
         date = input("Wat is de datum van de dag? (dd-mm-jjjj) ")
         try :
@@ -120,6 +121,71 @@ class Diary:
         content = input("Wat is de inhoud van de dag? ")
 
         self.entries.append(Entry(date=date, title=title, content=content))
+        self.save_entries()
+
+    def delete_day(self):
+        self.show_diary_entries()
+        entry = self.ask_to_chose_entry()
+        self.entries.remove(entry)
+
+    def edit_day(self):
+        entry = self.ask_to_chose_entry()
+        print("Wat wil je aanpassen?")
+        print("1: Datum")
+        print("2: Titel")
+        print("3: Inhoud")
+        choice = input("Keuze: ")
+
+        match choice:
+            case "1":
+                date = input("Wat is de nieuwe datum? (dd-mm-jjjj) ")
+                try:
+                    date = datetime.strptime(date, "%d-%m-%Y").date()
+                except ValueError:
+                    print("Ongeldige datum")
+                    self.edit_day()
+                entry.date = date
+            case "2":
+                title = input("Wat is de nieuwe titel? ")
+                entry.title = title
+            case "3":
+                content = input("Wat is de nieuwe inhoud? ")
+                entry.content = content
+            case _:
+                print("Ongeldige keuze")
+                self.edit_day()
+
+        self.save_entries()
+
+    def view_day(self):
+        entry = self.ask_to_chose_entry()
+        print(entry.title)
+        print(entry.content)
+
+    def stop(self):
+        self.save_entries()
+        print("Tot ziens!")
+        exit()
+
+    def save_entries(self):
+        if not self.logged_in:
+            return
+        self.user["Diary"] = []
+        for entry in self.entries:
+            self.user["Diary"].append({
+                "Date": entry.date.strftime("%d-%m-%Y"),
+                "Title": entry.title,
+                "Content": entry.content
+            })
+
+        json = open("../data/diary/diary.json", "r").read()
+        users = JSON.loads(json)
+        for i, user in enumerate(users):
+            if user["Username"] == self.user_name:
+                users[i] = self.user
+
+        with open("../data/diary/diary.json", "w") as file:
+            JSON.dump(users, file)
 
 
 
