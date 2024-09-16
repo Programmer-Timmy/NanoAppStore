@@ -45,7 +45,7 @@ class HangMan:
             case Difficulty.easy:
                 self.max_tries = 20
             case Difficulty.medium:
-                self.max_tries = 15
+                self.max_tries = 1
             case Difficulty.hard:
                 self.max_tries = 10
 
@@ -154,26 +154,6 @@ class HangMan:
             return True
         return False
 
-    def play_again(self):
-        """Ask the player if they want to play again."""
-        yes_tuple = ("ja", "yes", "j", "y")
-        no_tuple = ("nee", "no", "n")
-        choice = input("Wil je nog een keer spelen? (ja/nee): ")
-        match choice:
-            case choice if choice in yes_tuple:
-                self.tries = 1
-                self.guessed_letters = []
-                self.ask_difficulty()
-                self.get_random_word()
-                self.start_game()
-            case choice if choice in no_tuple:
-                print("Bedankt voor het spelen!")
-
-            # If the user enters anything other than the yes or no options, ask again.
-            case _:
-                print("Ongeldige keuze. Kies ja of nee.")
-                self.play_again()
-
     def save_score(self, guessed: bool):
         """Save the score to a JSON file."""
         with open("../data/hangMan/scores.json", "r+") as file:
@@ -184,6 +164,7 @@ class HangMan:
                 "timesGuessed": self.tries,
                 "dateTime": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
             }
+            print(scores)
             scores.append(score)
 
             # Reset file pointer to beginning of file. So we can overwrite the file.
@@ -200,5 +181,8 @@ class HangMan:
             if widget != self.app.winfo_children()[0]:
                 widget.destroy()
 
+
+
 if __name__ == "__main__":
     hang_man = HangMan().app.mainloop()
+
