@@ -54,7 +54,6 @@ class Diary:
             self.get_entries()
         else:
             messagebox.showerror("Fout", "Ongeldige gebruikersnaam of wachtwoord")
-            # Optionally clear the password field
             self.password_entry.delete(0, ctk.END)
 
     def show_entry_list(self):
@@ -101,7 +100,6 @@ class Diary:
             except (KeyError, ValueError) as e:
                 messagebox.showerror("Fout", f"Fout bij het verwerken van de invoer: {e}")
 
-        # Show the entry list in the main window
         self.show_entry_list()
 
     def get_user_credentials(self) -> str | None:
