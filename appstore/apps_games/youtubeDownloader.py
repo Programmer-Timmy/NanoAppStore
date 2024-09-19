@@ -63,7 +63,7 @@ cipher.get_throttling_function_name = get_throttling_function_name
 
 # https://www.youtube.com/watch?v=NI9LXzo0UY0 (video used for making the app, largely the gui)
 # YouTube Downloader Application Class
-class YouTubeDownloaderApp:
+class YoutubeDownloader:
     url_var: StringVar
     progress_label: CTkLabel
     finished_label: CTkLabel
@@ -75,6 +75,7 @@ class YouTubeDownloaderApp:
         self.root.geometry("720x480")
         self.root.title("YouTube Downloader")
         self.create_widgets()
+        self.root.mainloop()
 
     def create_widgets(self):
         """Create and arrange the UI components using pack."""
@@ -85,9 +86,8 @@ class YouTubeDownloaderApp:
                                       font=("Arial", 18))
         url_label.pack(pady=5)
 
-        self.url_var = ctk.StringVar()
-        url_entry = ctk.CTkEntry(self.root, font=("Arial", 18), width=350, textvariable=self.url_var)
-        url_entry.pack(pady=5)
+        self.url_entry = ctk.CTkEntry(self.root, font=("Arial", 18), width=350)
+        self.url_entry.pack(pady=5)
 
         self.progress_label = ctk.CTkLabel(self.root, text="0%", font=("Arial", 18))
         self.progress_label.pack(pady=5)
@@ -105,7 +105,8 @@ class YouTubeDownloaderApp:
 
     def start_download(self):
         """Start the download process in a separate thread."""
-        url = self.url_var.get()
+        url = self.url_entry.get()
+        print(url)
         if not self.validate_url(url):
             return
 
@@ -141,7 +142,7 @@ class YouTubeDownloaderApp:
         try:
             yt = YouTube(url, on_progress_callback=self.on_progress)
             stream = yt.streams.get_highest_resolution()
-            stream.download(output_path="../data/youtubeDownloader/videos")
+            stream.download(output_path="data/youtubeDownloader/videos")
             self.finished_label.configure(text="Download geslaagd", text_color="green")
         except Exception as e:
             self.finished_label.configure(text="Download mislukt", text_color="red")
@@ -163,5 +164,5 @@ class YouTubeDownloaderApp:
 
 # Main function to run the application
 if __name__ == "__main__":
-    app = YouTubeDownloaderApp()
-    app.root.mainloop()
+    YoutubeDownloader()
+
