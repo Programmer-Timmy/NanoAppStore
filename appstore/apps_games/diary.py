@@ -25,6 +25,7 @@ class Diary:
         self.app.title("Dagboek")
         self.app.protocol("WM_DELETE_WINDOW", self.stop)
         self.create_login_interface()
+        self.app.mainloop()
 
     def create_login_interface(self):
         """Create the login interface using Tkinter."""
@@ -104,7 +105,7 @@ class Diary:
 
     def get_user_credentials(self) -> str | None:
         """Get the user's diary entries."""
-        json = open("../data/diary/diary.json", "r").read()
+        json = open("data/diary/diary.json", "r").read()
         for user in JSON.loads(json):
             if user["Username"] == self.user_name:
                 self.user = user
@@ -223,8 +224,17 @@ class Diary:
     def save_entries(self):
         """Save the diary entries to a JSON file."""
         entries_data = [{"Date": e.date.strftime("%d-%m-%Y"), "Title": e.title, "Content": e.content} for e in self.entries]
-        with open("../data/diary/diary.json", "w") as f:
-            f.write(JSON.dumps({"Diary": entries_data}))
+        with open("data/diary/diary.json", "r+") as f:
+            json = JSON.loads(f.read())
+            for user in json:
+                if user["Username"] == self.user_name:
+                    user["Diary"] = entries_data
+                    break
+
+            f.seek(0)
+            f.write(JSON.dumps(json, indent=4))
+            f.truncate()
+
 
     def stop(self):
         """Exit the application."""
@@ -232,4 +242,3 @@ class Diary:
 
 if __name__ == "__main__":
     diary = Diary()
-    diary.app.mainloop()

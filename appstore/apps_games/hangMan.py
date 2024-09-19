@@ -24,6 +24,7 @@ class HangMan:
         self.app.title("Hang Man")
         customtkinter.CTkLabel(self.app, text="Hang Man", font=("Arial", 24)).pack(pady=10)
         self.show_welcome_screen()
+        self.app.mainloop()
 
     def show_welcome_screen(self):
         """Show the welcome screen."""
@@ -51,7 +52,7 @@ class HangMan:
 
     def get_random_word(self):
         """Get a random word based on the difficulty level."""
-        json_file = open("../data/hangMan/words.json", "r").read()
+        json_file = open("data/hangMan/words.json", "r").read()
         words = json.loads(json_file)
         match self.difficulty:
             case Difficulty.easy:
@@ -156,7 +157,7 @@ class HangMan:
 
     def save_score(self, guessed: bool):
         """Save the score to a JSON file."""
-        with open("../data/hangMan/scores.json", "r+") as file:
+        with open("data/hangMan/scores.json", "r+") as file:
             scores = json.loads(file.read())
             score = {
                 "userName": self.user_name,
@@ -184,5 +185,4 @@ class HangMan:
 
 
 if __name__ == "__main__":
-    hang_man = HangMan().app.mainloop()
-
+    hang_man = HangMan()
