@@ -23,6 +23,7 @@ class HangMan:
         self.app.title("Hang Man")
         customtkinter.CTkLabel(self.app, text="Hang Man", font=("Arial", 24)).pack(pady=10)
         self.show_welcome_screen()
+        self.app.protocol("WM_DELETE_WINDOW", self.close)
         self.app.mainloop()
 
     def show_welcome_screen(self):
@@ -181,6 +182,10 @@ class HangMan:
             if widget != self.app.winfo_children()[0]:
                 widget.destroy()
 
+    def close(self):
+        """Close the app."""
+        self.app.destroy()
+        exit()
 
 
 if __name__ == "__main__":

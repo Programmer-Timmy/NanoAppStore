@@ -75,6 +75,7 @@ class YoutubeDownloader:
         self.root.geometry("720x480")
         self.root.title("YouTube Downloader")
         self.create_widgets()
+        self.root.protocol("WM_DELETE_WINDOW", self.close)
         self.root.mainloop()
 
     def create_widgets(self):
@@ -161,6 +162,10 @@ class YoutubeDownloader:
         self.progress_bar.set(progress / 100)
         self.progress_label.configure(text=f"{progress:.2f}%")
 
+    def close(self):
+        """Close the application."""
+        self.root.destroy()
+        exit()
 
 # Main function to run the application
 if __name__ == "__main__":

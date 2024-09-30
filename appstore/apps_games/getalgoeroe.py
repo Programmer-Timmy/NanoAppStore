@@ -3,8 +3,6 @@ import dataclasses
 import random
 import customtkinter
 
-# TODO: Ask if its ok to not use for loop in start_game method
-
 @dataclasses.dataclass
 class Difficulty:
     """
@@ -38,7 +36,9 @@ class Getalgoeroe:
         self.app.geometry("720x480")
         self.app.title("Getalgoeroe")
         customtkinter.CTkLabel(self.app, text="Getalgoeroe", font=("Arial", 24)).pack(pady=10)
+        self.app.protocol("WM_DELETE_WINDOW", self.close)
         self.show_welcome_screen()
+        self.app.mainloop()
 
     # Game Logic Methods
     def get_max_attempts(self) -> int:
@@ -264,6 +264,11 @@ class Getalgoeroe:
             if isinstance(widget, customtkinter.CTkLabel) and widget._text_color == "red":
                 widget.destroy()
 
+    def close(self):
+        """Close the app."""
+        self.app.quit()
+        exit()
+
+
 if __name__ == "__main__":
     app = Getalgoeroe()
-    app.app.mainloop()
