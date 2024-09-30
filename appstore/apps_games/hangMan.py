@@ -165,10 +165,8 @@ class HangMan:
                 "timesGuessed": self.tries,
                 "dateTime": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
             }
-            print(scores)
             scores.append(score)
 
-            # Reset file pointer to beginning of file. So we can overwrite the file.
             file.seek(0)
             file.write(json.dumps(scores))
 
