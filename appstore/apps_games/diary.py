@@ -239,6 +239,7 @@ class Diary:
     def stop(self):
         """Exit the application."""
         self.app.quit()
+        exit()
 
 if __name__ == "__main__":
     diary = Diary()

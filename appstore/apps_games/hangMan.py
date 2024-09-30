@@ -1,5 +1,4 @@
 """ HangMan game """
-# TODO: Add GUI for HangMan
 import random
 from datetime import datetime
 

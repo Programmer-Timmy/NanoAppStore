@@ -69,6 +69,7 @@ class AppStore:
                 app_class = getattr(module, app.class_name)
                 app_class()  # Create an instance of the class
 
+                exit()
 
             else:
                 print(f"Error: Class {app.class_name} not found in {app.path}.")
