@@ -32,10 +32,6 @@
 - **Rock Paper Scissors**: Play the classic game of rock, paper, scissors.
 - **YouTube Downloader**: Download videos from YouTube with ease.
 
-## Contributing
-
-We welcome contributions! If you’d like to contribute to the project, please fork the repository and submit a pull request. 
-
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
