@@ -72,8 +72,27 @@ class SatisfactoryApiInterface:
 
         self.remove_old_elements()
 
-        # Main title with bold font
-        title_label = customtkinter.CTkLabel(self.app, text="Server Data", font=("Arial", 20, "bold"))
+        # Create the main frame that holds two subframes (left and right) using grid
+        main_frame = customtkinter.CTkFrame(self.app)
+        main_frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+
+        # Configure grid weights to make the frames fill the screen
+        self.app.grid_rowconfigure(0, weight=1)
+        self.app.grid_columnconfigure(0, weight=1)
+        main_frame.grid_rowconfigure(0, weight=1)
+        main_frame.grid_columnconfigure(0, weight=1)
+        main_frame.grid_columnconfigure(1, weight=1)
+
+        # Left frame for server data (taking up the left half of the screen)
+        left_frame = customtkinter.CTkFrame(main_frame)
+        left_frame.grid(row=0, column=0, sticky="nsew", padx=(0, 5))  # Small gap between frames
+
+        # Right frame for buttons (taking up the right half of the screen)
+        right_frame = customtkinter.CTkFrame(main_frame)
+        right_frame.grid(row=0, column=1, sticky="nsew", padx=(5, 0))  # Small gap between frames
+
+        # Server data in the left frame
+        title_label = customtkinter.CTkLabel(left_frame, text="Server Data", font=("Arial", 20, "bold"))
         title_label.pack(pady=10, anchor="w")
 
         # Format total game duration
@@ -81,7 +100,7 @@ class SatisfactoryApiInterface:
         formatted_duration = self.seconds_to_hms(total_game_duration_seconds)
 
         # Section title (for first group)
-        section_1_label = customtkinter.CTkLabel(self.app, text="General Information", font=("Arial", 16, "bold"))
+        section_1_label = customtkinter.CTkLabel(left_frame, text="General Information", font=("Arial", 16, "bold"))
         section_1_label.pack(pady=5, anchor="w")
 
         # Grouping related fields
@@ -94,13 +113,13 @@ class SatisfactoryApiInterface:
 
         # Section 1 data display with key-value pairs
         for key, value in data_section_1:
-            customtkinter.CTkLabel(self.app, text=f"{key}: {value}", font=("Arial", 14)).pack(pady=3, anchor="w")
+            customtkinter.CTkLabel(left_frame, text=f"{key}: {value}", font=("Arial", 14)).pack(pady=3, anchor="w")
 
         # Adding a separator
-        customtkinter.CTkLabel(self.app, text="---", font=("Arial", 12)).pack(pady=5, anchor="w")
+        customtkinter.CTkLabel(left_frame, text="---", font=("Arial", 12)).pack(pady=5, anchor="w")
 
         # Section title (for second group)
-        section_2_label = customtkinter.CTkLabel(self.app, text="Game Status", font=("Arial", 16, "bold"))
+        section_2_label = customtkinter.CTkLabel(left_frame, text="Game Status", font=("Arial", 16, "bold"))
         section_2_label.pack(pady=5, anchor="w")
 
         # Grouping more related fields
@@ -113,14 +132,24 @@ class SatisfactoryApiInterface:
 
         # Section 2 data display with key-value pairs
         for key, value in data_section_2:
-            customtkinter.CTkLabel(self.app, text=f"{key}: {value}", font=("Arial", 14)).pack(pady=3, anchor="w")
+            customtkinter.CTkLabel(left_frame, text=f"{key}: {value}", font=("Arial", 14)).pack(pady=3, anchor="w")
 
         # Adding another separator
-        customtkinter.CTkLabel(self.app, text="---", font=("Arial", 12)).pack(pady=5, anchor="w")
+        customtkinter.CTkLabel(left_frame, text="---", font=("Arial", 12)).pack(pady=5, anchor="w")
 
         # Optional Auto Load Session
-        customtkinter.CTkLabel(self.app, text=f"Auto Load Session: {server_data.get('autoLoadSessionName', 'N/A')}",
+        customtkinter.CTkLabel(left_frame, text=f"Auto Load Session: {server_data.get('autoLoadSessionName', 'N/A')}",
                                font=("Arial", 14)).pack(pady=5, anchor="w")
+
+        # Buttons on the right frame
+        button_list = ["Button 1", "Button 2", "Button 3", "Button 4"]  # Example buttons
+        for button_name in button_list:
+            customtkinter.CTkButton(right_frame, text=button_name,
+                                    command=lambda b=button_name: self.button_action(b)).pack(pady=5, anchor="center")
+
+    def button_action(self, button_name):
+        """Handle button actions."""
+        print(f"Button {button_name} clicked")
 
     def login(self):
         """Login to the satisfactory server using the provided details."""
