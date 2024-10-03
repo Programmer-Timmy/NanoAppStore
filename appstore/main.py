@@ -50,10 +50,14 @@ class AppStore:
         self.get_apps()
         main_frame = customtkinter.CTkFrame(self.app)
         main_frame.pack(pady=10)
+        buttons_per_row = 3
 
         for index, app in enumerate(self.apps_games):
             button = customtkinter.CTkButton(main_frame, text=app.name, command=lambda i=index: self.show_app(i))
-            button.pack(pady=5)
+
+            row = index // buttons_per_row
+            col = index % buttons_per_row
+            button.grid(row=row, column=col, padx=5, pady=5)
 
     def show_app(self, index: int) -> None:
         """Show and launch the app in a separate customtkinter window."""
