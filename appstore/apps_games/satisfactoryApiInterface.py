@@ -1,3 +1,4 @@
+import json
 import math
 
 import customtkinter
@@ -142,14 +143,16 @@ class SatisfactoryApiInterface:
                                font=("Arial", 14)).pack(pady=5, anchor="w")
 
         # Buttons on the right frame
-        button_list = ["Button 1", "Button 2", "Button 3", "Button 4"]  # Example buttons
+        button_list = ["Download a save file", "Button 2", "Button 3", "Button 4"]  # Example buttons
         for button_name in button_list:
             customtkinter.CTkButton(right_frame, text=button_name,
                                     command=lambda b=button_name: self.button_action(b)).pack(pady=5, anchor="center")
 
     def button_action(self, button_name):
         """Handle button actions."""
-        print(f"Button {button_name} clicked")
+        match button_name:
+            case "Download a save file":
+                self.download_save_game()
 
     def login(self):
         """Login to the satisfactory server using the provided details."""
@@ -158,6 +161,8 @@ class SatisfactoryApiInterface:
         privilege = self.privilege_entry.get()
         password = self.password_entry.get()
         self.api = SatisfactoryAPI(host=host, port=port)
+
+
 
         match privilege:
             case "CLIENT":
@@ -214,5 +219,45 @@ class SatisfactoryApiInterface:
         self.app.destroy()
         exit()
 
+    def download_save_game(self):
+        """Download the save game from the server."""
+        # tkinter input dialog to get the save name
+        possible_save_games = self.enumerate_latest_save_games()
+
+        if not possible_save_games:
+            CTkMessagebox(title="Error", message="No save games found on the server", icon="cancel", sound=True)
+            return
+
+        possible_text = ""
+        for key, value in possible_save_games.items():
+            possible_text += f"{key} - {value}\n"
+
+        save_name = customtkinter.CTkInputDialog(title="Download Save Game", text="Type one of the following save games to download: \n\n" + possible_text)
+        save_name = save_name.get_input()
+
+        if not save_name:
+            return
+
+        try:
+            save_game = self.api.download_save_game(save_name).data
+
+            with open(f'../data/satisfactoryApiInterface/{save_name}.sav', 'wb') as f:
+                f.write(save_game)
+        except APIError as e:
+            # e is an instance of APIError that error is a string that contains json data
+            error_message = e.message
+            CTkMessagebox(title="Error", message=str(error_message), icon="cancel", sound=True)
+            return
+
+        CTkMessagebox(title="Success", message="Save game downloaded successfully to the data folder", icon="info", sound=True)
+
+    def enumerate_latest_save_games(self) -> dict:
+        """Enumerate all save games on the server."""
+        list_save_games = {}
+        save_games = self.api.enumerate_sessions().data
+        for session in save_games['sessions']:
+            list_save_games.update({session['sessionName']: session['saveHeaders'][0]['saveName']})
+
+        return list_save_games
 if __name__ == "__main__":
     SatisfactoryApiInterface()
