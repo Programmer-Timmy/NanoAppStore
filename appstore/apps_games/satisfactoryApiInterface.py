@@ -3,8 +3,11 @@ import math
 
 import customtkinter
 from CTkMessagebox import CTkMessagebox
+from customtkinter import CTkToplevel
 from satisfactory_api_client import SatisfactoryAPI, APIError
 from satisfactory_api_client.data import MinimumPrivilegeLevel
+
+from appstore.views import ServerSettingsWindow, DownloadSaveGameWindow
 # using my onw satisfactory api client SDK to interact with a satisfactory dedicated server https://pypi.org/project/satisfactory-api-client/
 
 
@@ -39,10 +42,8 @@ class SatisfactoryApiInterface:
         self.port_entry = customtkinter.CTkEntry(self.app, font=("Arial", 16), width=350)
         self.port_entry.pack(pady=5)
 
-        # default port for satisfactory is 7777
         self.port_entry.insert(0, "7777")
 
-        # password type administator or client
         privilege_label = customtkinter.CTkLabel(self.app, text="Privilege Level:", font=("Arial", 16))
         privilege_label.pack(pady=5)
 
@@ -73,38 +74,30 @@ class SatisfactoryApiInterface:
 
         self.remove_old_elements()
 
-        # Create the main frame that holds two subframes (left and right) using grid
         main_frame = customtkinter.CTkFrame(self.app)
         main_frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
 
-        # Configure grid weights to make the frames fill the screen
         self.app.grid_rowconfigure(0, weight=1)
         self.app.grid_columnconfigure(0, weight=1)
         main_frame.grid_rowconfigure(0, weight=1)
         main_frame.grid_columnconfigure(0, weight=1)
         main_frame.grid_columnconfigure(1, weight=1)
 
-        # Left frame for server data (taking up the left half of the screen)
         left_frame = customtkinter.CTkFrame(main_frame)
-        left_frame.grid(row=0, column=0, sticky="nsew", padx=(0, 5))  # Small gap between frames
+        left_frame.grid(row=0, column=0, sticky="nsew", padx=(0, 5))
 
-        # Right frame for buttons (taking up the right half of the screen)
         right_frame = customtkinter.CTkFrame(main_frame)
-        right_frame.grid(row=0, column=1, sticky="nsew", padx=(5, 0))  # Small gap between frames
+        right_frame.grid(row=0, column=1, sticky="nsew", padx=(5, 0))
 
-        # Server data in the left frame
         title_label = customtkinter.CTkLabel(left_frame, text="Server Data", font=("Arial", 20, "bold"))
         title_label.pack(pady=10, anchor="w")
 
-        # Format total game duration
         total_game_duration_seconds = server_data.get('totalGameDuration', 0)
         formatted_duration = self.seconds_to_hms(total_game_duration_seconds)
 
-        # Section title (for first group)
         section_1_label = customtkinter.CTkLabel(left_frame, text="General Information", font=("Arial", 16, "bold"))
         section_1_label.pack(pady=5, anchor="w")
 
-        # Grouping related fields
         data_section_1 = [
             ("Session Name", server_data.get('activeSessionName', 'N/A')),
             ("Connected Players",
@@ -112,18 +105,14 @@ class SatisfactoryApiInterface:
             ("Tech Tier", server_data.get('techTier', 'N/A'))
         ]
 
-        # Section 1 data display with key-value pairs
         for key, value in data_section_1:
             customtkinter.CTkLabel(left_frame, text=f"{key}: {value}", font=("Arial", 14)).pack(pady=3, anchor="w")
 
-        # Adding a separator
         customtkinter.CTkLabel(left_frame, text="---", font=("Arial", 12)).pack(pady=5, anchor="w")
 
-        # Section title (for second group)
         section_2_label = customtkinter.CTkLabel(left_frame, text="Game Status", font=("Arial", 16, "bold"))
         section_2_label.pack(pady=5, anchor="w")
 
-        # Grouping more related fields
         data_section_2 = [
             ("Is Game Running", server_data.get('isGameRunning', 'N/A')),
             ("Total Game Duration", formatted_duration),
@@ -131,19 +120,15 @@ class SatisfactoryApiInterface:
             ("Average Tick Rate", round(server_data.get('averageTickRate', 'N/A')))
         ]
 
-        # Section 2 data display with key-value pairs
         for key, value in data_section_2:
             customtkinter.CTkLabel(left_frame, text=f"{key}: {value}", font=("Arial", 14)).pack(pady=3, anchor="w")
 
-        # Adding another separator
         customtkinter.CTkLabel(left_frame, text="---", font=("Arial", 12)).pack(pady=5, anchor="w")
 
-        # Optional Auto Load Session
         customtkinter.CTkLabel(left_frame, text=f"Auto Load Session: {server_data.get('autoLoadSessionName', 'N/A')}",
                                font=("Arial", 14)).pack(pady=5, anchor="w")
 
-        # Buttons on the right frame
-        button_list = ["Download a save file", "Button 2", "Button 3", "Button 4"]  # Example buttons
+        button_list = ["Download An Save File", "Show Server Settings", "Button 3", "Button 4"]  # Example buttons
         for button_name in button_list:
             customtkinter.CTkButton(right_frame, text=button_name,
                                     command=lambda b=button_name: self.button_action(b)).pack(pady=5, anchor="center")
@@ -151,8 +136,10 @@ class SatisfactoryApiInterface:
     def button_action(self, button_name):
         """Handle button actions."""
         match button_name:
-            case "Download a save file":
+            case "Download An Save File":
                 self.download_save_game()
+            case "Show Server Settings":
+                self.show_server_settings()
 
     def login(self):
         """Login to the satisfactory server using the provided details."""
@@ -161,8 +148,6 @@ class SatisfactoryApiInterface:
         privilege = self.privilege_entry.get()
         password = self.password_entry.get()
         self.api = SatisfactoryAPI(host=host, port=port)
-
-
 
         match privilege:
             case "CLIENT":
@@ -228,36 +213,41 @@ class SatisfactoryApiInterface:
             CTkMessagebox(title="Error", message="No save games found on the server", icon="cancel", sound=True)
             return
 
-        possible_text = ""
-        for key, value in possible_save_games.items():
-            possible_text += f"{key} - {value}\n"
+        DownloadSaveGameWindow(possible_save_games, self.api)
 
-        save_name = customtkinter.CTkInputDialog(title="Download Save Game", text="Type one of the following save games to download: \n\n" + possible_text)
-        save_name = save_name.get_input()
+    def show_server_settings(self):
+        server_settings = self.get_server_settings()
+        print(server_settings)
 
-        if not save_name:
+        server_settings = server_settings['serverOptions']
+        if not server_settings:
+            CTkMessagebox(title="Error", message="Failed to get server settings", icon="cancel", sound=True)
             return
 
-        try:
-            save_game = self.api.download_save_game(save_name).data
+        ServerSettingsWindow(server_settings).attributes("-topmost", True)
 
-            with open(f'../data/satisfactoryApiInterface/{save_name}.sav', 'wb') as f:
-                f.write(save_game)
-        except APIError as e:
-            # e is an instance of APIError that error is a string that contains json data
-            error_message = e.message
-            CTkMessagebox(title="Error", message=str(error_message), icon="cancel", sound=True)
-            return
-
-        CTkMessagebox(title="Success", message="Save game downloaded successfully to the data folder", icon="info", sound=True)
-
-    def enumerate_latest_save_games(self) -> dict:
-        """Enumerate all save games on the server."""
-        list_save_games = {}
+    def enumerate_latest_save_games(self) -> list:
+        """Enumerate all save games on the server and return a list of formatted save game strings."""
+        list_save_games = []
         save_games = self.api.enumerate_sessions().data
+
         for session in save_games['sessions']:
-            list_save_games.update({session['sessionName']: session['saveHeaders'][0]['saveName']})
+            # Loop through the first three saveHeaders
+            for header in session['saveHeaders'][:3]:
+                save_entry = f"{session['sessionName']} ({header['saveName']})"
+                list_save_games.append(save_entry)
 
         return list_save_games
+
+    def get_server_settings(self):
+        """Get the server settings."""
+        try:
+            return self.api.get_server_options().data
+        except APIError as e:
+            CTkMessagebox(title="Error", message=str(e), icon="cancel", sound=True)
+            return None
+
 if __name__ == "__main__":
     SatisfactoryApiInterface()
+
+

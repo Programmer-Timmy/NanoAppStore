@@ -146,6 +146,8 @@ class Diary:
         save_button = ctk.CTkButton(add_window, text="Opslaan", command=lambda: self.save_new_entry(date_entry.get(), title_entry.get(), content_entry.get("1.0", ctk.END), add_window))
         save_button.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
+        add_window.attributes("-topmost", True)
+
     def save_new_entry(self, date_str, title, content, window):
         """Save the new entry."""
         try:
@@ -190,6 +192,8 @@ class Diary:
         save_button = ctk.CTkButton(edit_window, text="Opslaan", command=lambda: self.save_edited_entry(entry, date_entry.get(), title_entry.get(), content_entry.get("1.0", ctk.END), edit_window))
         save_button.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
+        edit_window.attributes("-topmost", True)
+
     def save_edited_entry(self, old_entry: Entry, date_str, title, content, window):
         """Save the edited entry."""
         try:
@@ -220,6 +224,8 @@ class Diary:
 
         close_button = ctk.CTkButton(view_window, text="Sluiten", command=view_window.destroy)
         close_button.grid(row=4, column=0, padx=10, pady=5)
+
+        view_window.attributes("-topmost", True)
 
     def save_entries(self):
         """Save the diary entries to a JSON file."""
