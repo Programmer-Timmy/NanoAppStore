@@ -2,6 +2,7 @@ import json
 import math
 
 import customtkinter
+import requests
 from CTkMessagebox import CTkMessagebox
 from customtkinter import CTkToplevel
 from satisfactory_api_client import SatisfactoryAPI, APIError
@@ -147,6 +148,11 @@ class SatisfactoryApiInterface:
         port = int(self.port_entry.get())
         privilege = self.privilege_entry.get()
         password = self.password_entry.get()
+
+        if not host or not port:
+            CTkMessagebox(title="Error", message="Please enter the host and port", icon="cancel", sound=True)
+            return
+
         self.api = SatisfactoryAPI(host=host, port=port)
 
         match privilege:
@@ -157,7 +163,7 @@ class SatisfactoryApiInterface:
 
         try:
             self.api.health_check()
-        except APIError:
+        except requests.exceptions.ConnectionError:
             CTkMessagebox(title="Error", message="Failed to connect to the server", icon="cancel", sound=True)
             return
 
