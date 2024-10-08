@@ -23,7 +23,6 @@ class ServerSettingsWindow(customtkinter.CTkToplevel):
 
         for key, value in self.settings.items():
             key = key.replace("FG.", "").replace("DS", "")
-            print(key)
             for char in key:
                 if char.isupper() and key.index(char) != 0:
                     key = key.replace(char, f" {char}")
@@ -85,7 +84,7 @@ class DownloadSaveGameWindow(customtkinter.CTkToplevel):
         try:
             save_game = self.api.download_save_game(save_file_name).data
             project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            with open(f"{project_dir}/appstore/data/satisfactoryApiInterface/{save_file_name}", "wb") as f:
+            with open(f"{project_dir}/appstore/data/satisfactoryApiInterface/{save_file_name}.sav", "wb") as f:
                 f.write(save_game)
 
             CTkMessagebox(title="Success", message="Save game downloaded successfully.", icon="info", sound=True)

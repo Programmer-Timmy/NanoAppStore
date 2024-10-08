@@ -217,7 +217,6 @@ class SatisfactoryApiInterface:
 
     def show_server_settings(self):
         server_settings = self.get_server_settings()
-        print(server_settings)
 
         server_settings = server_settings['serverOptions']
         if not server_settings:
