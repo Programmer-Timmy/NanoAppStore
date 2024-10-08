@@ -1,10 +1,6 @@
-import json
-import math
-
 import customtkinter
 import requests
 from CTkMessagebox import CTkMessagebox
-from customtkinter import CTkToplevel
 from satisfactory_api_client import SatisfactoryAPI, APIError
 from satisfactory_api_client.data import MinimumPrivilegeLevel
 
@@ -129,7 +125,7 @@ class SatisfactoryApiInterface:
         customtkinter.CTkLabel(left_frame, text=f"Auto Load Session: {server_data.get('autoLoadSessionName', 'N/A')}",
                                font=("Arial", 14)).pack(pady=5, anchor="w")
 
-        button_list = ["Download An Save File", "Show Server Settings", "Button 3", "Button 4"]  # Example buttons
+        button_list = ["Download An Save File", "Show Server Settings", "Run Command", "Shutdown Server"]  # Example buttons
         for button_name in button_list:
             customtkinter.CTkButton(right_frame, text=button_name,
                                     command=lambda b=button_name: self.button_action(b)).pack(pady=5, anchor="center")
@@ -141,6 +137,10 @@ class SatisfactoryApiInterface:
                 self.download_save_game()
             case "Show Server Settings":
                 self.show_server_settings()
+            case "Run Command":
+                self.run_command()
+            case "Shutdown Server":
+                self.shutdown_server()
 
     def login(self):
         """Login to the satisfactory server using the provided details."""
@@ -148,7 +148,6 @@ class SatisfactoryApiInterface:
         port = int(self.port_entry.get())
         privilege = self.privilege_entry.get()
         password = self.password_entry.get()
-
         if not host or not port:
             CTkMessagebox(title="Error", message="Please enter the host and port", icon="cancel", sound=True)
             return
@@ -251,6 +250,32 @@ class SatisfactoryApiInterface:
         except APIError as e:
             CTkMessagebox(title="Error", message=str(e), icon="cancel", sound=True)
             return None
+
+    def run_command(self):
+        """Run a command on the server."""
+        command = customtkinter.CTkInputDialog(title="Run Command", text="Enter the command to run")
+
+        command = command.get_input()
+
+        if not command:
+            return
+
+        try:
+            response = self.api.run_command(command)
+            CTkMessagebox(title="Command Output", message=response.data['commandResult'], icon="info", sound=False)
+        except APIError as e:
+            CTkMessagebox(title="Error", message=str(e), icon="cancel", sound=True)
+            return None
+
+    def shutdown_server(self):
+        """Shutdown the server."""
+        try:
+            response = self.api.shutdown()
+            CTkMessagebox(title="Success", message=response.data['message'], icon="info", sound=True)
+        except APIError as e:
+            CTkMessagebox(title="Error", message=str(e), icon="cancel", sound=True)
+            return None
+
 
 if __name__ == "__main__":
     SatisfactoryApiInterface()
