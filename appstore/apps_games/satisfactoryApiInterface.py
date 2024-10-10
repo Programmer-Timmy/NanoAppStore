@@ -214,6 +214,9 @@ class SatisfactoryApiInterface:
         # tkinter input dialog to get the save name
         possible_save_games = self.enumerate_latest_save_games()
 
+        if possible_save_games == False:
+            return
+
         if not possible_save_games:
             CTkMessagebox(title="Error", message="No save games found on the server", icon="cancel", sound=True)
             return
@@ -233,7 +236,15 @@ class SatisfactoryApiInterface:
     def enumerate_latest_save_games(self) -> list:
         """Enumerate all save games on the server and return a list of formatted save game strings."""
         list_save_games = []
-        save_games = self.api.enumerate_sessions().data
+        try:
+            save_games = self.api.enumerate_sessions().data
+        except APIError as e:
+            if e.error_code == 'insufficient_scope':
+                CTkMessagebox(title="Error", message="You need to be an administrator to download save games", icon="cancel", sound=True)
+                return False
+            else:
+                CTkMessagebox(title="Error", message=str(e.message), icon="cancel", sound=True)
+                return False
 
         for session in save_games['sessions']:
             # Loop through the first three saveHeaders
@@ -248,7 +259,7 @@ class SatisfactoryApiInterface:
         try:
             return self.api.get_server_options().data
         except APIError as e:
-            CTkMessagebox(title="Error", message=str(e), icon="cancel", sound=True)
+            CTkMessagebox(title="Error", message=str(e.message), icon="cancel", sound=True)
             return None
 
     def run_command(self):
@@ -264,7 +275,11 @@ class SatisfactoryApiInterface:
             response = self.api.run_command(command)
             CTkMessagebox(title="Command Output", message=response.data['commandResult'], icon="info", sound=False)
         except APIError as e:
-            CTkMessagebox(title="Error", message=str(e), icon="cancel", sound=True)
+            if e.error_code == 'insufficient_scope':
+                CTkMessagebox(title="Error", message="You need to be an administrator to run commands", icon="cancel", sound=True)
+                return
+
+            CTkMessagebox(title="Error", message=str(e.message), icon="cancel", sound=True)
             return None
 
     def shutdown_server(self):
@@ -273,7 +288,11 @@ class SatisfactoryApiInterface:
             response = self.api.shutdown()
             CTkMessagebox(title="Success", message=response.data['message'], icon="info", sound=True)
         except APIError as e:
-            CTkMessagebox(title="Error", message=str(e), icon="cancel", sound=True)
+            if e.error_code == 'insufficient_scope':
+                CTkMessagebox(title="Error", message="You need to be an administrator to shutdown the server", icon="cancel", sound=True)
+                return
+
+            CTkMessagebox(title="Error", message=str(e.message), icon="cancel", sound=True)
             return None
 
 
