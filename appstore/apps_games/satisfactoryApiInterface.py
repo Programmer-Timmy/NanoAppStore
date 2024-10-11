@@ -233,7 +233,7 @@ class SatisfactoryApiInterface:
 
         ServerSettingsWindow(server_settings).attributes("-topmost", True)
 
-    def enumerate_latest_save_games(self) -> list:
+    def enumerate_latest_save_games(self) -> list | bool:
         """Enumerate all save games on the server and return a list of formatted save game strings."""
         list_save_games = []
         try:
