@@ -1,6 +1,6 @@
-# Nano App Store
+# Nano Application Marketplace
 
-**Nano App Store** is a lightweight Python-based application store featuring a collection of useful and entertaining apps.
+**Nano Application Marketplace** is a lightweight Python-based application store featuring a collection of useful and entertaining apps.
 
 ## Requirements
 
