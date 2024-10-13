@@ -31,6 +31,7 @@
 - **Hangman**: A classic word-guessing game.
 - **Rock Paper Scissors**: Play the classic game of rock, paper, scissors.
 - **YouTube Downloader**: Download videos from YouTube with ease.
+- **Satisfactory Dedicated Server API Interface**: Get data from your satisfactory server.
 
 ## License
 
